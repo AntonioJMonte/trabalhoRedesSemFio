@@ -36,6 +36,15 @@ Nenhuma exige alteração na lógica de análise.
 | Ajuste isolado do 1º andar | idem | [3.4](#34-distâncias-intermediárias) |
 | 6.4 Comparativo entre blocos | o Bloco I inteiro | [3.7](#37-bloco-i-completo) |
 
+**Pendências que não são de dado**
+
+Além do que falta coletar, há 4 limitações da implementação — detalhadas na
+[seção 7](#7-pendências-do-notebook-código). Uma delas, `planta` e `aps` serem únicos por bloco
+em vez de por andar, **precisa ser resolvida antes da campanha**, porque muda o formato do que
+você anota em campo.
+
+Se quiser ir direto ao que fazer, veja o [checklist de campo consolidado](#8-checklist-de-campo-consolidado).
+
 ---
 
 ## 2. Como o notebook trata a ausência
@@ -88,6 +97,110 @@ M102", "Escada de incêndio, 1º andar". Converter texto em coordenada seria inv
 interpolação herdaria essa invenção com aparência de medição. Por isso o notebook se recusa a
 fazê-lo. A coluna `local` inclusive está vazia no CSV atual; vale preenchê-la junto.
 
+#### O que essas coordenadas geram
+
+Com os dados atuais, **12 figuras**: RSSI e SNR × 2 bandas × 3 pavimentos. Cada uma traz a
+planta ao fundo, o campo interpolado em RdYlGn por cima, os pontos medidos, os APs e as linhas
+de contorno em **−67 e −70 dBm**. Medindo também vazão e latência, sobe para **24 figuras**.
+
+Mais as camadas do QGIS: um raster `.png` + `.pgw` por métrica/banda/andar, e o `pontos_M.csv`
+com geometria.
+
+O que o mapa responde e as tabelas não: onde exatamente ficam as zonas fracas, onde instalar AP
+novo, se há sobreposição ou vão entre APs, e qual a extensão espacial do sombreamento das portas
+metálicas.
+
+**O que as coordenadas NÃO mudam:** nada da Fase 6.1. O α = 2,62, os L_obstáculo, o descasamento
+de canal e o teste de alavancagem dependem de `distancia_ao_ap`, não de `x`/`y` — já estão
+completos e validados. As coordenadas servem exclusivamente à Fase 5, que é a única fase hoje
+inteiramente bloqueada e a que dá nome ao projeto.
+
+#### Ressalva de cobertura — leia antes de ir a campo
+
+Com 5 a 6 pontos por pavimento, **o mapa sai majoritariamente vazio**. O `griddata` linear só
+interpola dentro do fecho convexo dos pontos medidos; fora dele o notebook aplica hachura e
+declara "sem medição, não extrapolado". No teste com 6 pontos num pavimento de 30 × 20 m,
+**89 % da planta saiu hachurada** — mapa honesto, cobrindo um décimo do andar.
+
+São duas ações diferentes:
+
+| Ação | Resultado |
+|---|---|
+| Só medir `x`, `y` dos 17 pontos atuais | Destrava o pipeline. Mapa correto, cobrindo fração pequena de cada andar |
+| Medir `x`, `y` **e acrescentar pontos** | Mapa que efetivamente cobre a edificação |
+
+Para um mapa que se sustente como entregável, o razoável é **15 a 25 pontos por pavimento**,
+distribuídos por circulação e salas — não só perto dos APs, que é onde a campanha atual se
+concentrou (8 das 17 leituras de 2,4 GHz estão a 1 m ou menos de um AP).
+
+#### Lista concreta de coordenadas a medir
+
+As descrições abaixo vêm do documento v2, que nomeou apenas os 6 pontos com obstáculo. Os
+demais estão como ⬜ **a identificar** — recupere-os das anotações da campanha. Não invente.
+
+**1º andar — 5 a 7 coordenadas**
+
+| Medir | Ponto | Dist. AP | Referência |
+|---|---|---|---|
+| Fundo da sala **M102** | M-01 | 8,5 m | ✅ conhecida |
+| Ponto a 1 m do AP (nº 1) | M-02 | 1,0 m | ⬜ a identificar — leitura de referência do modelo |
+| Ponto a 1 m do AP (nº 2) | M-03 | 1,0 m | ⬜ a identificar — onde houve *band steering* p/ 5 GHz |
+| Ponto a 4 m sem obstáculo | M-04 | 4,0 m | ⬜ a identificar |
+| **Escada de incêndio** | M-05 | 6,0 m | ✅ conhecida — porta corta-fogo, 21,1 dB |
+| Ponto de 5 GHz a 4 m c/ parede | M-18 | 4,0 m | ⬜ **confirmar se é o mesmo local do M-04** |
+| Ponto de 5 GHz a 3 m | M-21 | 3,0 m | ⬜ **confirmar se coincide com algum acima** |
+
+*Não medir separado:* M-19 e M-20 são os mesmos locais de M-02 e M-03.
+
+**Térreo — 6 coordenadas**
+
+| Medir | Ponto | Dist. AP | Referência |
+|---|---|---|---|
+| **Sala entre os dois APs** | M-06 | 4,0 m | ✅ conhecida |
+| Ponto a 1 m do AP (nº 1) | M-07 | 1,0 m | ⬜ a identificar — RSSI −25 dBm com 0 % de qualidade de canal |
+| Ponto a 1 m do AP (nº 2) | M-08 | 1,0 m | ⬜ a identificar |
+| Ponto a 3 m sem obstáculo | M-09 | 3,0 m | ⬜ a identificar |
+| **Escada do Térreo** | M-10 | 6,0 m | ✅ conhecida — porta metálica, 9,1 dB |
+| Ponto a 2 m sem obstáculo | M-11 | 2,0 m | ⬜ a identificar |
+
+*Não medir separado:* M-23, M-24, M-25 e M-26 são os mesmos locais de M-06, M-07, M-08 e M-09.
+*Fica de fora:* a zona cega do **M-22** — ver seção 7.2.
+
+**Subsolo — 6 coordenadas**
+
+| Medir | Ponto | Dist. AP | Referência |
+|---|---|---|---|
+| **Sala entre os dois APs** | M-12 | 4,0 m | ✅ conhecida |
+| Ponto a 1 m do AP (nº 1) | M-13 | 1,0 m | ⬜ a identificar — excluído do ajuste |
+| Ponto a 1 m do AP (nº 2) | M-14 | 1,0 m | ⬜ a identificar — excluído do ajuste |
+| Ponto a **15 m do AP associado** | M-15 | 15,0 m | ⬜ a identificar — *sticky client*; sustenta todo o α |
+| **Escada do Subsolo** | M-16 | 18,0 m | ✅ conhecida — porta metálica, 6,6 dB |
+| Ponto a 3 m sem obstáculo | M-17 | 3,0 m | ⬜ a identificar |
+
+*Não medir separado:* M-27, M-28, M-29 e M-30 são os mesmos locais de M-12, M-13, M-14 e M-17.
+
+> **Por que 17 e não 29.** Comparando distância e obstáculo, o pareamento entre bandas é exato
+> no Térreo (23↔6, 24↔7, 25↔8, 26↔9) e no Subsolo (27↔12, 28↔13, 29↔14, 30↔17). No 1º andar,
+> 19↔2 e 20↔3 são claros, mas **M-18 e M-21 não têm par óbvio**. Confirme: se pareiam, são 17
+> posições; se não, 19. Nas linhas pareadas do CSV, repita o mesmo `x`, `y`.
+
+**APs — quantidade a levantar em campo**
+
+Não sei quantos são. O que os dados permitem afirmar:
+
+- **1º andar:** ao menos 2 (duas leituras distintas a 1 m — M-02 e M-03)
+- **Térreo:** ao menos 2 — "sala **entre** APs" mais duas leituras a 1 m
+- **Subsolo:** ao menos 2 — "sala **entre** APs", duas leituras a 1 m, e mais um AP distante
+  (o do M-15, a 15 m)
+
+Estimativa: **6 a 7 APs**, a confirmar.
+
+**Cantos dos pavimentos — 4 por andar, não se mede**
+
+Bastam a largura `L` e a altura `A` do pavimento; as coordenadas saem prontas e são os pontos
+de controle que você digita no Georreferenciador do QGIS:
+`(0, 0)` · `(L, 0)` · `(L, A)` · `(0, A)`. Meça só **L** e **A** de cada pavimento.
+
 **Como medir**
 
 1. Consiga a planta baixa de cada pavimento em imagem (`.png` ou `.jpg`). A secretaria ou a
@@ -127,10 +240,10 @@ latência quando essas colunas existirem — com contornos destacados em −67 e
 sobre a região fora do fecho convexo da amostragem. E em `saida/qgis/`, um par `.png` + `.pgw`
 por métrica/banda/andar, mais o `pontos_M.csv` agora com geometria.
 
-> **Uma planta por pavimento.** O campo `planta` é único por bloco. Se as plantas do Térreo,
-> 1º andar e Subsolo forem diferentes, hoje só uma entra como fundo — as demais figuras saem
-> com a geometria correta, porém sem imagem por baixo. Se precisar de uma planta por andar,
-> me avise que eu troco o campo para um dicionário `{andar: caminho}`.
+> **Atenção — `planta` e `aps` são únicos por bloco, não por andar.** Como o Bloco M tem 3
+> pavimentos com plantas e posições de AP diferentes, isso não comporta o que você vai medir:
+> os APs do Subsolo apareceriam desenhados também no mapa do Térreo. **Resolver antes de ir a
+> campo.** Ver seção 7.1.
 
 ---
 
@@ -344,12 +457,130 @@ Rode o notebook inteiro e confira, na ordem:
 
 ## 6. Resumo por prioridade
 
+### 6.1 Pendências de dado (dependem de campo)
+
 | Prioridade | Item | Esforço | Destrava |
 |---|---|---|---|
 | **Alta** | `x`, `y` + planta + dimensões | campanha de medição em planta | toda a Fase 5.2 e 5.3, o georreferenciamento |
 | **Alta** | Vazão e latência | subconjunto de pontos, `iperf3` + `ping` | Fases 6.2 e 6.3 completas |
 | **Alta** | Distâncias de 6, 10 e 15 m sem obstáculo | poucas leituras extras | α em 5 GHz, robustez do α em 2,4 GHz |
+| **Alta** | Adensar a malha (15–25 pontos/andar) | a maior parte do esforço de campo | mapa com cobertura útil, não 90 % hachurado |
 | Média | Redes vizinhas por ponto | varredura passiva | SINR real no lugar de SNR |
 | Média | `modelo_ap` | consulta à equipe de TI | aviso de comparabilidade da 6.4 |
+| Média | Preencher a coluna `local` | anotações da campanha | rótulos legíveis nas figuras e no QGIS |
 | Baixa | BSSID | registro durante a coleta | confirma a exclusão de P13/P14 e o sticky client |
 | — | Bloco I | campanha completa | Fase 6.4 |
+
+### 6.2 Pendências de código (não dependem de campo)
+
+Detalhadas na seção 7.
+
+| Prioridade | Item | Quando resolver |
+|---|---|---|
+| **Alta** | `planta` e `aps` por andar, não por bloco | **antes da campanha** — muda o formato do que você anota |
+| Baixa | Suporte a zona cega (leitura sem RSSI) | antes de mapear o M-22 |
+| Baixa | Cálculo rigoroso de SINR | só se coletar a lista completa de vizinhas |
+| Baixa | Consumir `bssid` na análise | só se registrar BSSID |
+
+---
+
+## 7. Pendências do notebook (código)
+
+Diferente das anteriores: estas não dependem de coleta. São limitações da implementação atual,
+registradas para não serem descobertas tarde demais.
+
+### 7.1 `planta` e `aps` são únicos por bloco — deveriam ser por andar
+
+**Impacto: alto, e bloqueia o formato da coleta.** A configuração aceita hoje uma única imagem
+de planta e um único dicionário de APs por bloco:
+
+```python
+"planta": DIR_DADOS / "planta_M.png",
+"aps": {"AP-M1": (14.0, 9.5)},
+```
+
+O Bloco M tem **3 pavimentos**, com plantas distintas e APs em posições distintas. Na estrutura
+atual, os APs do Subsolo apareceriam desenhados também no mapa do Térreo, e apenas uma das três
+plantas entraria como fundo — as outras figuras sairiam com geometria correta, porém sem imagem
+por baixo.
+
+**Correção necessária:** trocar os dois campos por dicionários indexados por andar —
+`{"Terreo": ..., "1o": ..., "Subsolo": ...}`. Não afeta nenhuma lógica de análise.
+
+> **Resolva isto antes de ir a campo.** É o que define se você anota "os APs do Bloco M" ou
+> "os APs de cada pavimento do Bloco M".
+
+### 7.2 Zona cega não é representável
+
+O **ponto 22** (Térreo, 5 GHz) não estabeleceu conexão e **não tem linha no CSV**. É informação
+relevante para o mapa — "aqui não conectou" —, mas hoje não há como representá-la: a validação
+da Fase 5.1 descarta linhas sem RSSI, por decisão de projeto (leitura sem RSSI não entra em
+nenhum cálculo).
+
+Para marcá-la na planta seria preciso uma coordenada **e** um tratamento específico de zona
+cega — uma categoria à parte, plotada como marcador, fora da interpolação. Não implementado.
+
+### 7.3 SINR rigoroso não implementado
+
+O notebook consome apenas a contagem `redes_vizinhas_mesmo_canal` e calcula **SNR**, não SINR,
+com piso de ruído adotado de −95 dBm (uniforme, não medido). O procedimento correto — soma em
+potência linear, ponderação por sobreposição espectral — está descrito na seção 3.3, mas exige
+uma tabela auxiliar (uma linha por vizinha, por ponto) e uma função nova.
+
+### 7.4 `bssid` é carregado, mas nenhuma análise o consome
+
+Se a coluna existir, ela é lida e exportada para o QGIS. Nenhum cálculo a utiliza. Para que o
+ajuste passasse a agrupar por AP associado, seria preciso alterar a Fase 6.1.
+
+---
+
+## 8. Checklist de campo consolidado
+
+Tudo que precisa ser levantado, numa ida só. Os itens de coordenada estão detalhados na
+seção 3.1; os de medição, nas seções 3.2 a 3.4.
+
+**Antes de sair**
+
+- [ ] Resolver a pendência 7.1 (`planta`/`aps` por andar) — define o formato da anotação
+- [ ] Obter as **3 plantas baixas** em imagem (Térreo, 1º andar, Subsolo)
+- [ ] Definir o referencial: origem `(0,0)` no **mesmo canto do prédio** em todos os pavimentos,
+      `x` para a direita, `y` para cima, em metros
+
+**Geometria**
+
+- [ ] Largura `L` e altura `A` de cada pavimento — **3 pares de números**
+- [ ] Coordenada de **cada AP**, por pavimento — estimados **6 a 7** no total
+
+**Pontos já existentes** (para georreferenciar o que já foi medido)
+
+- [ ] 1º andar: coordenadas de M-01 a M-05 — **5 pontos** (+ M-18 e M-21 se forem locais distintos)
+- [ ] Térreo: coordenadas de M-06 a M-11 — **6 pontos**
+- [ ] Subsolo: coordenadas de M-12 a M-17 — **6 pontos**
+- [ ] Confirmar o pareamento entre bandas (ver quadro da seção 3.1)
+- [ ] Preencher a coluna `local` dos 11 pontos marcados como ⬜ *a identificar*
+
+**Pontos novos** (para o mapa cobrir o prédio e destravar o α de 5 GHz)
+
+- [ ] Adensar até **15 a 25 pontos por pavimento**, distribuídos por circulação e salas
+- [ ] Garantir leituras **sem obstáculo a 6, 10 e 15 m**, nas duas bandas, em cada pavimento
+- [ ] Anotar `x`, `y` de cada ponto novo no mesmo referencial
+
+**Medições por ponto** (ao menos num subconjunto representativo)
+
+- [ ] RSSI nas duas bandas, mesma orientação do aparelho usada na campanha original
+- [ ] Distância ao **AP associado** (não ao mais próximo)
+- [ ] Obstáculos descritos em texto
+- [ ] `iperf3` TCP e UDP → `throughput_tcp_mbps`, `throughput_udp_mbps`
+- [ ] `ping` 50 pacotes → `latencia_media_ms`, `perda_pacotes_pct`
+- [ ] Contagem de redes vizinhas no mesmo canal → `redes_vizinhas_mesmo_canal`
+- [ ] BSSID do AP associado (opcional, mas resolve a ambiguidade de P13/P14)
+
+**Metadados**
+
+- [ ] Modelo do AP → `modelo_ap` na configuração
+- [ ] Data da campanha → `data_campanha`
+
+> **Uma campanha resolve tudo.** Coordenadas, adensamento da malha, distâncias intermediárias,
+> vazão e latência são o mesmo trabalho de campo. Se for voltar ao Bloco M, faça os quatro na
+> mesma ida — e aplique o mesmo protocolo desde o início no Bloco I, onde nada disso precisa
+> ser remediado depois.
