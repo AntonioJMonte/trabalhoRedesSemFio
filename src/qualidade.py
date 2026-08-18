@@ -394,3 +394,31 @@ def gerar_relatorio(df, config, cenarios_df=None, laje_df=None, heatmap_df=None,
     caminho.parent.mkdir(parents=True, exist_ok=True)
     caminho.write_text(texto, encoding="utf-8")
     return texto
+
+
+CAMINHO_COORDENADAS = DIR_SAIDA / "coordenadas_a_levantar.csv"
+
+
+def template_coordenadas(df, caminho=None):
+    """Grava a lista de posicoes distintas que ainda nao tem x/y.
+
+    Sai como CSV pronto para preencher em campo: uma linha por posicao fisica
+    (nao por leitura), com as leituras que a compartilham e a distancia ja
+    anotada, e as colunas x_m/y_m em branco. E a contrapartida acionavel do
+    item 3 da tabela de executabilidade.
+    """
+    caminho = caminho or CAMINHO_COORDENADAS
+    sem = df[df["x_m"].isna()]
+    if sem.empty:
+        return pd.DataFrame()
+
+    t = (sem.groupby(["predio", "pavimento", "local"])
+            .agg(leituras=("id", lambda s: ", ".join(str(int(v)) for v in sorted(s))),
+                 dist_campo_m=("dist_campo_m",
+                               lambda s: ", ".join("%g" % v for v in sorted(set(s.dropna())))))
+            .reset_index())
+    t["x_m"] = ""
+    t["y_m"] = ""
+    caminho.parent.mkdir(parents=True, exist_ok=True)
+    t.to_csv(caminho, index=False, encoding="utf-8")
+    return t

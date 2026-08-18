@@ -1,6 +1,6 @@
 # Relatorio de qualidade dos dados
 
-Gerado automaticamente em 18/08/2026 17:45 a partir de `dados/leituras.csv`.
+Gerado automaticamente em 18/08/2026 19:19 a partir de `dados/leituras.csv`.
 
 Este relatorio roda **antes** de qualquer analise. Nenhuma leitura e descartada pelo pipeline sem aparecer em alguma secao abaixo.
 

@@ -142,6 +142,9 @@ def rodar(caminho=None, gerar_figuras=True):
         heatmap_df=saidas["heatmaps"], obstaculos_df=saidas["obstaculos"],
         mismatch_df=saidas["mismatch"])
 
+    # Template acionavel: as posicoes que ainda precisam de x/y em campo.
+    saidas["coordenadas_a_levantar"] = qualidade.template_coordenadas(df)
+
     # --- 8. limitacoes --------------------------------------------------------
     saidas["limitacoes"] = limitacoes.gerar(df, PREDIOS, cenarios_df=cen)
 

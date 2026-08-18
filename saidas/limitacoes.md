@@ -1,6 +1,6 @@
 # Limitacoes do estudo
 
-Documento gerado automaticamente em 18/08/2026 17:45 a partir de dados/leituras.csv. Os numeros abaixo vem da execucao, nao de texto fixo.
+Documento gerado automaticamente em 18/08/2026 19:19 a partir de dados/leituras.csv. Os numeros abaixo vem da execucao, nao de texto fixo.
 
 
 ## 1. Amostra unica por ponto, sem repeticao nem media
