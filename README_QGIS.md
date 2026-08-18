@@ -1,7 +1,7 @@
 # Georreferenciamento no QGIS — Mapa de Cobertura Wi-Fi
 
-Gerado em 16/08/2026 19:14 pelo notebook das Fases 5 e 6.
-Blocos exportados: M.
+Gerado em 18/08/2026 11:44 pelo notebook das Fases 5 e 6.
+Blocos exportados: M, I.
 Formato de raster adotado: **PNG + world file .pgw (rasterio ausente neste ambiente)**.
 
 O sistema de referência é **local, em metros**, com origem no canto da planta
@@ -52,3 +52,4 @@ passo 1 — refaça os pontos de controle.
 ## Arquivos gerados
 
 - `pontos_M.csv`
+- `pontos_I.csv`

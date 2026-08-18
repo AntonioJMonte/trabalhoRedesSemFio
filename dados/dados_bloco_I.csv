@@ -1,0 +1,27 @@
+bloco,ponto,andar,local,banda,rssi,d,d_registrado,obst,obst_registrado,canal,melhor,pct,livre,obs
+I,I-31,1o,Fundo do corredor,2.4,-55,6,6,Nenhum,Nenhum,6,1,37,True,
+I,I-32,1o,Abaixo do AP2,2.4,-33,1,0,Nenhum,Nenhum,11,1,29,True,"d registrado como 0 m (sob o AP); tratado como d0=1 m, criterio do Bloco M"
+I,I-33,1o,Abaixo do AP1,2.4,-47,1,1,Nenhum,Nenhum,6,11,27,True,
+I,I-34,1o,Janela/Bebedouro,2.4,-58,8,8,Nenhum,Nenhum,6,11,10,True,
+I,I-35,1o,Escada,2.4,-59,9,9,Paredes,Paredes,1,11,40,False,
+I,I-36,Terreo,Fundo do Terreo,2.4,-52,4,4,Nenhum,Nenhum,6,11,34,True,
+I,I-37,Terreo,Abaixo do AP2,2.4,-46,2,2,Nenhum,Nenhum,6,11,25,True,
+I,I-38,Terreo,Abaixo do AP1,2.4,-36,1,1,Nenhum,Nenhum,6,11,0,True,
+I,I-39,Terreo,Escada,2.4,-55,6,6,Paredes,Paredes,1,6,50,False,
+I,I-40,Terreo,Entrada,2.4,-59,9,9,Portoes de metal,Portoes de metal,1,11,52,False,
+I,I-41,Subsolo,Entrada/Bebedouro,2.4,-45,2,2,Nenhum,Nenhum,1,1,100,True,
+I,I-42,Subsolo,Abaixo do AP1,2.4,-38,1,1,Nenhum,Nenhum,1,11,28,True,
+I,I-43,Subsolo,Abaixo do AP2,2.4,-28,1,0,Nenhum,Prateleiras de metal,6,11,33,True,"d registrado como 0 m (sob o AP); tratado como d0=1 m, criterio do Bloco M. Reclassificado como SEM obstaculo em 18/08/2026: a medicao foi feita diretamente sob o AP, sem nada interposto no caminho do enlace; as prateleiras de metal estao no entorno do ponto, nao entre o ponto e o AP. Anotacao original em obst_registrado."
+I,I-44,Subsolo,Canto da Biblioteca,2.4,-56,6,6,Prateleiras de metal/Colunas,Prateleiras de metal/Colunas,6,11,26,False,
+I,I-45,Subsolo,Escada,2.4,-58,8,8,Paredes,Paredes,6,11,49,False,
+I,I-46,1o,Fundo do corredor,5.0,-52,2,2,Nenhum,Nenhum,40,44,100,True,
+I,I-47,1o,Abaixo do AP2,5.0,-32,1,0,Nenhum,Nenhum,40,44,100,True,"d registrado como 0 m (sob o AP); tratado como d0=1 m, criterio do Bloco M"
+I,I-48,1o,Abaixo do AP1,5.0,-42,1,1,Nenhum,Nenhum,52,36,100,True,
+I,I-49,1o,Janela/Bebedouro,5.0,-40,8,8,Nenhum,Nenhum,52,60,100,True,
+I,I-50,Terreo,Fundo do Terreo,5.0,-53,4,4,Nenhum,Nenhum,108,100,100,True,
+I,I-51,Terreo,Abaixo do AP2,5.0,-55,2,2,Nenhum,Nenhum,108,132,100,True,
+I,I-52,Terreo,Abaixo do AP1,5.0,-37,1,1,Nenhum,Nenhum,108,132,100,True,
+I,I-53,Subsolo,Entrada/Bebedouro,5.0,-55,2,2,Nenhum,Nenhum,108,140,100,True,
+I,I-54,Subsolo,Abaixo do AP1,5.0,-57,3,3,Nenhum,Nenhum,108,140,100,True,
+I,I-55,Subsolo,Abaixo do AP2,5.0,-33,1,0,Nenhum,Prateleiras de metal,60,36,100,True,"d registrado como 0 m (sob o AP); tratado como d0=1 m, criterio do Bloco M. Reclassificado como SEM obstaculo em 18/08/2026: a medicao foi feita diretamente sob o AP, sem nada interposto no caminho do enlace; as prateleiras de metal estao no entorno do ponto, nao entre o ponto e o AP. Anotacao original em obst_registrado."
+I,I-56,Subsolo,Canto da Biblioteca,5.0,-64,7,7,Prateleiras de metal/Colunas,Prateleiras de metal/Colunas,124,36,100,False,
